@@ -1,5 +1,5 @@
 // Admin service for admin API calls
-const API_BASE = import.meta.env.PROD ? "/api" : "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "/api" : "http://localhost:5000/api");
 
 class AdminService {
   // Get auth token
