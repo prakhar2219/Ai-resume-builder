@@ -1,7 +1,7 @@
 // Resume data management service
 import authService from "./authService";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = import.meta.env.PROD ? "/api" : "http://localhost:5000/api";
 
 class ResumeService {
   // Parse resume text into structured data

@@ -45,33 +45,42 @@ app.get("/health", (req, res) => {
 // Error handling
 app.use(errorHandler);
 
-// Start server
+// Start server or export for Vercel
 async function startServer() {
   try {
     const isConnected = await connectToPostgreSQL();
     if (!isConnected) {
       console.error("❌ Failed to connect to PostgreSQL");
-      process.exit(1);
+      // Skip exit in serverless environments to allow further retries
+      if (!process.env.VERCEL) process.exit(1);
     }
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-    });
+    
+    // In local development, start the server
+    if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+      app.listen(PORT, () => {
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+      });
+    }
   } catch (error) {
     console.error("❌ Failed to start server:", error);
-    process.exit(1);
+    if (!process.env.VERCEL) process.exit(1);
   }
 }
 
 // Handle uncaught exceptions
 process.on("uncaughtException", (error) => {
   console.error(" Uncaught Exception:", error);
-  process.exit(1);
+  if (!process.env.VERCEL) process.exit(1);
 });
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (error) => {
   console.error(" Unhandled Rejection:", error);
-  process.exit(1);
+  if (!process.env.VERCEL) process.exit(1);
 });
 
+// Initialize database connection
 startServer();
+
+// Export the Express API for Vercel
+module.exports = app;
