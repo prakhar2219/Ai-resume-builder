@@ -89,6 +89,9 @@ import Template30 from "../components/ai-resume-templates/Template30.jsx";
 // 404
 const NotFound = lazy(() => import("../pages/NotFound.jsx"));
 
+// ATS Score
+const ATSScorePage = lazy(() => import("../pages/ATSScorePage.jsx"));
+
 /* ------------------ Routes ------------------ */
 const AppRoutes = () => {
   return (
@@ -107,6 +110,9 @@ const AppRoutes = () => {
 
         {/* -------- Build Flow -------- */}
         <Route path="/build-option" element={<BuildOption />} />
+        
+        {/* -------- ATS Checking -------- */}
+        <Route path="/ats-score" element={<ATSScorePage />} />
 
         {/* -------- Details Flow -------- */}
         <Route path="/details/personal-details" element={<PersonalDetails />} />

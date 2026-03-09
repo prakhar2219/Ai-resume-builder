@@ -36,6 +36,12 @@ const Navbar = () => {
                   >
                     My Resumes
                   </Link>
+                  <Link
+                    to="/ats-score"
+                    className="hover:bg-teal-600 hover:text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 flex items-center gap-1"
+                  >
+                    ATS Score
+                  </Link>
                   <span className="text-teal-400 text-sm">
                     Welcome, {user?.name || user?.email}!
                   </span>
@@ -113,6 +119,13 @@ const Navbar = () => {
                   onClick={() => setIsOpen(false)}
                 >
                   My Resumes
+                </Link>
+                <Link
+                  to="/ats-score"
+                  className="block hover:bg-teal-600 hover:text-white px-3 py-2 rounded-md text-base font-medium transition-all duration-300"
+                  onClick={() => setIsOpen(false)}
+                >
+                  ATS Score
                 </Link>
                 <div className="block px-3 py-2 text-teal-400 text-sm">
                   Welcome, {user?.name || user?.email}!

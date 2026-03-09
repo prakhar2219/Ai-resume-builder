@@ -30,12 +30,14 @@ const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
 const geminiRoutes = require("./routes/geminiRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
+const atsRoutes = require("./routes/atsRoutes");
 
 // Register API Routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/resumes", resumeRoutes);
 app.use("/api/enhance", geminiRoutes);
+app.use("/api/ats", atsRoutes);
 
 // Health check
 app.get("/health", (req, res) => {

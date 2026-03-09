@@ -1065,6 +1065,61 @@ class ResumeService {
       achievements: achievements || [],
     };
   }
+
+  // Analyze ATS Score from file
+  async analyzeATSFile(file) {
+    try {
+      const formData = new FormData();
+      formData.append("resume", file);
+
+      // Using standard fetch since this might be a public feature, 
+      // or we can use authenticatedRequest if we want to track history
+      const response = await fetch(`${API_BASE}/ats/analyze-file`, {
+        method: "POST",
+        body: formData,
+        // Don't set Content-Type, let browser set it with boundary for FormData
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        return { success: true, data: result.data };
+      } else {
+        return {
+          success: false,
+          error: result.error || "Failed to analyze resume",
+        };
+      }
+    } catch (error) {
+      return { success: false, error: "Network error. Please try again." };
+    }
+  }
+
+  // Analyze ATS Score from text
+  async analyzeATSText(text, resumeData = null) {
+    try {
+      const response = await fetch(`${API_BASE}/ats/analyze-text`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text, resumeData }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        return { success: true, data: result.data };
+      } else {
+        return {
+          success: false,
+          error: result.error || "Failed to analyze resume text",
+        };
+      }
+    } catch (error) {
+      return { success: false, error: "Network error. Please try again." };
+    }
+  }
 }
 
 // Create and export a singleton instance
