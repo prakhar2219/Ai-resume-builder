@@ -1,7 +1,8 @@
 // services/adminApi.js
 import authService from "./authService";
 
-const BASE = "http://localhost:5000/api/admin";
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "/api" : "http://localhost:5000/api");
+const BASE = `${API_BASE}/admin`;
 
 /* ================= DASHBOARD ================= */
 

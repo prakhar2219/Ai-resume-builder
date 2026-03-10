@@ -61,7 +61,8 @@ const Template22 = () => {
 
         if (token) {
           // Make direct API call to save to database
-          const response = await fetch('http://localhost:5000/api/resumes', {
+          const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "/api" : "http://localhost:5000/api");
+          const response = await fetch(`${API_BASE}/resumes`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
