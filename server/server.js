@@ -10,6 +10,50 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const normalizeOrigin = (value) => {
+  if (!value) return null;
+
+  try {
+    return new URL(value).origin;
+  } catch {
+    return null;
+  }
+};
+
+const configuredOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5180",
+  process.env.FRONTEND_URL,
+  ...(process.env.FRONTEND_URLS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+]
+  .map(normalizeOrigin)
+  .filter(Boolean);
+
+const allowVercelPreviews = process.env.ALLOW_VERCEL_PREVIEWS !== "false";
+
+const isAllowedOrigin = (origin) => {
+  const normalizedOrigin = normalizeOrigin(origin);
+  if (!normalizedOrigin) return false;
+
+  if (configuredOrigins.includes(normalizedOrigin)) {
+    return true;
+  }
+
+  if (allowVercelPreviews) {
+    try {
+      const { hostname, protocol } = new URL(normalizedOrigin);
+      return protocol === "https:" && hostname.endsWith(".vercel.app");
+    } catch {
+      return false;
+    }
+  }
+
+  return false;
+};
+
 // Middleware
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: "50mb" }));
@@ -20,16 +64,11 @@ app.use(
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
-      
-      const allowedOrigins = [
-        "http://localhost:5180", // Local frontend
-        process.env.FRONTEND_URL // Production frontend (Vercel)
-      ];
-      
-      if (allowedOrigins.indexOf(origin) !== -1 || !process.env.FRONTEND_URL) {
+
+      if (isAllowedOrigin(origin) || configuredOrigins.length === 0) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
@@ -71,10 +110,10 @@ async function startServer() {
       if (!process.env.VERCEL) process.exit(1);
     }
     
-    // In local development, start the server
-    if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+    // Render and local development both need a long-running HTTP server.
+    if (!process.env.VERCEL) {
       app.listen(PORT, () => {
-        console.log(`🚀 Server running on http://localhost:${PORT}`);
+        console.log(`🚀 Server running on port ${PORT}`);
       });
     }
   } catch (error) {
